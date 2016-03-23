@@ -707,7 +707,7 @@ public class Ontology implements Iterable<Term>
 
 		// try using the primary id
 		Term term = getTerm(termIdString);
-		if (term != null)
+		if (term != null && !term.isObsolete())
 			return term;
 
 		/*
