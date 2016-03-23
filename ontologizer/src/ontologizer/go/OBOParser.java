@@ -167,19 +167,20 @@ public class OBOParser {
 	}
 
 	public OBOParser(String inputFile) {
-		createFromFile(inputFile, 0);
+		try {
+			this.input = new OBOParserFileInput(inputFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public OBOParser(String inputFile, int options) {
-		createFromFile(inputFile, options);
-	}
-
-	private OBOParser createFromFile(String inputFile, int i) {
 		try {
-			return new OBOParser(new OBOParserFileInput(inputFile), i);
+			this.input = new OBOParserFileInput(inputFile);
 		} catch (IOException e) {
-			throw new RuntimeException("error initializing obo parser from " + inputFile + " and options: " + i);
+			throw new RuntimeException(e);
 		}
+		this.options = options;
 	}
 
 	/**
