@@ -11,7 +11,7 @@
   <repositories>
    <repository>
     <id>ontologizer-dependency-repo</id>
-    <url>file://${basedir}/../ontologizer/local-maven-repo</url>
+    <url>file://${basedir}/ontologizer/local-maven-repo</url>
    </repository>
   </repositories>
 
@@ -30,8 +30,8 @@
   </build>
 
   <modules>
-    <module>../ontologizer</module>
-    <module>../ontologizer.dataprep</module>
+    <module>ontologizer</module>
+    <module>ontologizer.dataprep</module>
   </modules>
 
   <profiles>
@@ -41,12 +41,12 @@
       <activeByDefault>true</activeByDefault>
      </activation>
      <modules>
-      <module>../ontologizer.svd</module>
-      <module>../ontologizer.tests</module>
-      <module>../ontologizer.gui</module>
-      <module>../ontologizer.cmdline</module>
-      <module>../ontologizer.benchmark</module>
-      <module>../ontologizer.cmdline.printopts</module>
+      <module>ontologizer.svd</module>
+      <module>ontologizer.tests</module>
+      <module>ontologizer.gui</module>
+      <module>ontologizer.cmdline</module>
+      <module>ontologizer.benchmark</module>
+      <module>ontologizer.cmdline.printopts</module>
      </modules>
 
      <reporting>
@@ -69,7 +69,7 @@
     <profile>
      <id>Web</id>
      <modules>
-      <module>../ontologizer.web</module>
+      <module>ontologizer.web</module>
      </modules>
     </profile>
    </profiles>
