@@ -82,17 +82,15 @@ public class PafLineScanner {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(input.getFilename()));
 			String line = null;
-			ArrayList<Association> associations = new ArrayList<Association>();
-			HashMap<ByteString, ByteString> synonym2gene = new HashMap<ByteString, ByteString>();
-			HashMap<ByteString, ByteString> dbObjectID2gene = new HashMap<ByteString, ByteString>();
+			associations = new ArrayList<Association>();
+			synonym2gene = new HashMap<ByteString, ByteString>();
+			dbObjectID2gene = new HashMap<ByteString, ByteString>();
 
 			while ((line = in.readLine()) != null) {
 
 				try {
-					String[] split = line.split("\t");
 					Association assoc = new Association(line, Type.PAF);
-					boolean addedAssociation = processParsedAssociation(associations, synonym2gene, dbObjectID2gene, assoc);
-					System.out.println("parsed association: " + assoc);
+					boolean addedAssociation = processParsedAssociation(assoc);
 
 				} catch (Exception e) {
 					throw new RuntimeException("processing error for PAF file line: " + line);
@@ -104,8 +102,7 @@ public class PafLineScanner {
 		}
 	}
 
-	private boolean processParsedAssociation(ArrayList<Association> associations, HashMap<ByteString, ByteString> synonym2gene,
-			HashMap<ByteString, ByteString> dbObjectID2gene, Association assoc) {
+	private boolean processParsedAssociation(Association assoc) {
 		try {
 			TermID currentTermID = assoc.getTermID();
 
@@ -258,6 +255,7 @@ public class PafLineScanner {
 
 			/* dbObject2Gene has a mapping from dbObjects to gene names */
 			dbObjectID2gene.put(assoc.getDB_Object(), assoc.getObjectSymbol());
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			bad++;
