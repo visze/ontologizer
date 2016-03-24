@@ -17,6 +17,12 @@ import ontologizer.go.TermID;
 import ontologizer.go.TermMap;
 import ontologizer.types.ByteString;
 
+/**
+ * A modified GAF-scanner to better handle phenotype annotation files.
+ * 
+ * @author Sebastian Koehler
+ *
+ */
 public class PafLineScanner {
 
 	private static Logger logger = Logger.getLogger(GAFByteLineScanner.class.getName());
@@ -36,7 +42,6 @@ public class PafLineScanner {
 	/** Monitor progress */
 	private IAssociationParserProgress progress;
 
-	private int lineno = 0;
 	private long millis = 0;
 	public int good = 0;
 	public int bad = 0;
@@ -55,18 +60,18 @@ public class PafLineScanner {
 	private PrefixPool prefixPool = new PrefixPool();
 
 	/** Items as identified by the object symbol to the list of associations */
-	private HashMap<ByteString, ArrayList<Association>> gene2Associations = new HashMap<ByteString, ArrayList<Association>>();
+	private HashMap<ByteString, ArrayList<Association>> itemId2associations = new HashMap<ByteString, ArrayList<Association>>();
 
 	/** key: synonym, value: main gene name (dbObject_Symbol) */
 	private HashMap<ByteString, ByteString> synonym2gene = new HashMap<ByteString, ByteString>();
 
 	/** key: dbObjectID, value: main gene name (dbObject_Symbol) */
-	private HashMap<ByteString, ByteString> dbObjectID2gene = new HashMap<ByteString, ByteString>();
+	private HashMap<ByteString, ByteString> itemId2disease = new HashMap<ByteString, ByteString>();
 
-	private HashMap<ByteString, ByteString> dbObject2ObjectSymbol = new HashMap<ByteString, ByteString>();
-	private HashMap<ByteString, ByteString> objectSymbol2dbObject = new HashMap<ByteString, ByteString>();
+	private HashMap<ByteString, ByteString> itemId2itemName = new HashMap<ByteString, ByteString>();
+//	private HashMap<ByteString, ByteString> itemName2itemId = new HashMap<ByteString, ByteString>();
 	private HashMap<TermID, Term> altTermID2Term = null;
-	private HashSet<TermID> usedGoTerms = new HashSet<TermID>();
+	private HashSet<TermID> usedTerms = new HashSet<TermID>();
 
 	public PafLineScanner(IParserInput input, byte[] head, Set<ByteString> names, TermMap terms, Set<ByteString> evidences,
 			IAssociationParserProgress progress) {
@@ -84,13 +89,15 @@ public class PafLineScanner {
 			String line = null;
 			associations = new ArrayList<Association>();
 			synonym2gene = new HashMap<ByteString, ByteString>();
-			dbObjectID2gene = new HashMap<ByteString, ByteString>();
+			itemId2disease = new HashMap<ByteString, ByteString>();
 
+			int lineNumber = 0;
 			while ((line = in.readLine()) != null) {
 
+			    	++lineNumber;
 				try {
 					Association assoc = new Association(line, Type.PAF);
-					boolean addedAssociation = processParsedAssociation(assoc);
+					boolean addedAssociation = processParsedAssociation(assoc, lineNumber);
 
 				} catch (Exception e) {
 					throw new RuntimeException("processing error for PAF file line: " + line);
@@ -102,7 +109,7 @@ public class PafLineScanner {
 		}
 	}
 
-	private boolean processParsedAssociation(Association assoc) {
+	private boolean processParsedAssociation(Association assoc, int lineNumber) {
 		try {
 			TermID currentTermID = assoc.getTermID();
 
@@ -159,7 +166,7 @@ public class PafLineScanner {
 				assoc.setTermID(currentTermID);
 			}
 
-			usedGoTerms.add(currentTermID);
+			usedTerms.add(currentTermID);
 
 			if (currentTerm.isObsolete()) {
 				System.err.println(
@@ -212,30 +219,16 @@ public class PafLineScanner {
 			}
 
 			{
-				/* Check if db object id and object symbol are really bijective */
-				ByteString dbObject = objectSymbol2dbObject.get(assoc.getObjectSymbol());
-				if (dbObject == null)
-					objectSymbol2dbObject.put(assoc.getObjectSymbol(), assoc.getDB_Object());
-				else {
-					if (!dbObject.equals(assoc.getDB_Object())) {
-						symbolWarnings++;
-						if (symbolWarnings < 1000) {
-							logger.warning("Line " + lineno + ": Expected that symbol \"" + assoc.getObjectSymbol() + "\" maps to \"" + dbObject
-									+ "\" but it maps to \"" + assoc.getDB_Object() + "\"");
-						}
-					}
-
+				ByteString itemName = itemId2itemName.get(assoc.getDB_Object());
+				if (itemName == null) {
+					itemId2itemName.put(assoc.getDB_Object(), assoc.getObjectSymbol());
 				}
-
-				ByteString objectSymbol = dbObject2ObjectSymbol.get(assoc.getDB_Object());
-				if (objectSymbol == null)
-					dbObject2ObjectSymbol.put(assoc.getDB_Object(), assoc.getObjectSymbol());
 				else {
-					if (!objectSymbol.equals(assoc.getObjectSymbol())) {
+					if (!itemName.equals(assoc.getObjectSymbol())) {
 						dbObjectWarnings++;
 						if (dbObjectWarnings < 1000) {
-							logger.warning("Line " + lineno + ": Expected that dbObject \"" + assoc.getDB_Object() + "\" maps to symbol \""
-									+ objectSymbol + "\" but it maps to \"" + assoc.getObjectSymbol() + "\"");
+							logger.warning("Line " + lineNumber + ": Expected that dbObject \"" + assoc.getDB_Object() + "\" maps to symbol \""
+									+ itemName + "\" but it maps to \"" + assoc.getObjectSymbol() + "\"");
 						}
 					}
 
@@ -246,21 +239,21 @@ public class PafLineScanner {
 			/* Add the Association to ArrayList */
 			associations.add(assoc);
 
-			ArrayList<Association> gassociations = gene2Associations.get(assoc.getObjectSymbol());
+			ArrayList<Association> gassociations = itemId2associations.get(assoc.getDB_Object());
 			if (gassociations == null) {
 				gassociations = new ArrayList<Association>();
-				gene2Associations.put(assoc.getObjectSymbol(), gassociations);
+				itemId2associations.put(assoc.getDB_Object(), gassociations);
 			}
 			gassociations.add(assoc);
 
 			/* dbObject2Gene has a mapping from dbObjects to gene names */
-			dbObjectID2gene.put(assoc.getDB_Object(), assoc.getObjectSymbol());
-
+			itemId2disease.put(assoc.getDB_Object(), assoc.getObjectSymbol());
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			bad++;
 			System.err.println("Nonfatal error: " + "malformed line in association file \n" + /* associationFile + */"\nCould not parse line "
-					+ lineno + "\n" + ex.getMessage() + "\n");
+					+ lineNumber + "\n" + ex.getMessage() + "\n");
 		}
 
 		return true;
@@ -270,7 +263,7 @@ public class PafLineScanner {
 	 * @return the number of terms used by the import.
 	 */
 	public int getNumberOfUsedTerms() {
-		return usedGoTerms.size();
+		return usedTerms.size();
 	}
 
 	public ArrayList<Association> getAssociations() {
@@ -281,8 +274,9 @@ public class PafLineScanner {
 		return synonym2gene;
 	}
 
-	public HashMap<ByteString, ByteString> getDbObjectID2Gene() {
-		return dbObjectID2gene;
+	public HashMap<ByteString, ByteString> getItemId2disease() {
+		return itemId2disease;
 	}
+	
 
 }
