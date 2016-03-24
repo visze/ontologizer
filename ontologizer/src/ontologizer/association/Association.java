@@ -337,6 +337,7 @@ public class Association
 
 		fields[GOFIELD] = fields[GOFIELD].trim();
 		a.termID = new TermID(fields[GOFIELD], prefixPool);
+		a.synonym = new ByteString(fields[11].trim());
 	}
 
 
@@ -428,6 +429,7 @@ public class Association
 			}
 			p++;
 		}
+		
 		return a;
 	}
 
