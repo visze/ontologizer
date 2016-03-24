@@ -430,4 +430,26 @@ public class Association
 		}
 		return a;
 	}
+
+	@Override
+	public String toString() {
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("Association [DB_Object=");
+	    builder.append(DB_Object);
+	    builder.append(", DB_Object_Symbol=");
+	    builder.append(DB_Object_Symbol);
+	    builder.append(", termID=");
+	    builder.append(termID);
+	    builder.append(", evidence=");
+	    builder.append(evidence);
+	    builder.append(", aspect=");
+	    builder.append(aspect);
+	    builder.append(", notQualifier=");
+	    builder.append(notQualifier);
+	    builder.append(", synonym=");
+	    builder.append(synonym);
+	    builder.append("]");
+	    return builder.toString();
+	}
+	
 }
