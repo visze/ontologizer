@@ -176,6 +176,7 @@ public class AssociationParser
 			} 
 			else if (userDefinedType.equals(Type.PAF)) {
 				importAssociationFileFromPaf(input, head, names, terms, evidences, progress);
+				fileType = Type.GAF;
 			}
 			else
 			{
