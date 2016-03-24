@@ -172,6 +172,24 @@ public class OBOParser
 	{
 		this(input, 0);
 	}
+	
+	public OBOParser(String inputFile) {
+		try {
+			this.input = new OBOParserFileInput(inputFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public OBOParser(String inputFile, int options) {
+		try {
+			this.input = new OBOParserFileInput(inputFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		this.options = options;
+	}
+
 
 	/**
 	 * Constructs an obo parser for a particular input.

@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ontologizer.go.IParserInput;
+import ontologizer.go.OBOParserFileInput;
 import ontologizer.go.TermID;
 import ontologizer.go.TermMap;
 import ontologizer.linescanner.AbstractByteLineScanner;
@@ -36,12 +37,14 @@ public class AssociationParser
 {
 	private static Logger logger = Logger.getLogger(AssociationParser.class.getName());
 
-	enum Type
+	public enum Type
 	{
 		UNKNOWN,
 		GAF,
 		IDS,
-		AFFYMETRIX
+		AFFYMETRIX,
+		PAF
+
 	};
 
 	/** Mapping from gene (or gene product) names to Association objects */
@@ -65,6 +68,9 @@ public class AssociationParser
 	/** Counts the dbObject warnings */
 	private int dbObjectWarnings;
 
+	private static Type userDefinedType = Type.UNKNOWN;
+
+	
 	/**
 	 * Construct the association parser object. The given file name will
 	 * parsed. Convenience constructor when not using progress monitor.
@@ -78,7 +84,7 @@ public class AssociationParser
 		this(input,terms,null);
 	}
 
-
+	
 	/**
 	 * Construct the association parser object. The given file name will
 	 * parsed. Convenience constructor when not using progress monitor.
@@ -92,6 +98,11 @@ public class AssociationParser
 	{
 		this(input,terms,names,null);
 	}
+	
+	public AssociationParser(String fileName, TermMap terms) throws IOException {
+		this(new OBOParserFileInput(fileName), terms, null);
+	}
+
 
 	/**
 	 * Construct the association parser object. The given file name will
@@ -162,7 +173,11 @@ public class AssociationParser
 			{
 				importAffyFile(input,head,names,terms,progress);
 				fileType = Type.AFFYMETRIX;
-			} else
+			} 
+			else if (userDefinedType.equals(Type.PAF)) {
+				importAssociationFileFromPaf(input, head, names, terms, evidences, progress);
+			}
+			else
 			{
 				importAssociationFile(input,head,names,terms,evidences,progress);
 				fileType = Type.GAF;
@@ -222,6 +237,39 @@ public class AssociationParser
 		{
 		}
 	}
+	
+	private void importAssociationFileFromPaf(IParserInput input, byte[] head, HashSet<ByteString> names, TermMap terms, Collection<String> evidences,
+		IAssociationParserProgress progress) throws IOException 
+	{
+	    
+	    	if (progress != null)
+        		progress.init(input.getSize());
+        
+        	PafLineScanner ls = new PafLineScanner(input, head, names, terms, getByteStringSetFromStringCollection(evidences), progress);
+        	ls.scan();
+        
+        	if (progress != null)
+        		progress.update(input.getSize());
+        
+        	logger.log(Level.INFO,
+        			ls.good + " associations parsed, " + ls.kept + " of which were kept while " + ls.bad + " malformed lines had to be ignored.");
+        	logger.log(Level.INFO,
+        			"A further " + ls.skipped + " associations were skipped due to various reasons whereas " + ls.nots
+        					+ " of those where explicitly qualified with NOT, " + +ls.obsolete + " referred to obsolete terms and " + ls.evidenceMismatch
+        					+ " didn't" + " match the requested evidence codes");
+        	logger.log(Level.INFO, "A total of " + ls.getNumberOfUsedTerms() + " terms are directly associated to " + dbObjectID2gene.size() + " items.");
+        
+        	associations = ls.getAssociations();
+        	synonym2gene = ls.getSynonym2Gene();
+        	dbObjectID2gene = ls.getDbObjectID2Gene();
+        
+        	if (symbolWarnings >= 1000)
+        		logger.warning("The symbols of a total of " + symbolWarnings + " entries mapped ambiguously");
+        	if (dbObjectWarnings >= 1000)
+        		logger.warning("The objects of a  total of " + dbObjectWarnings + " entries mapped ambiguously");
+        }
+
+	
 
 	/**
 	 * Get from a collection of strings a ByteString set.
@@ -578,4 +626,9 @@ public class AssociationParser
 		System.arraycopy(a2, 0, b, a1.length,a2.length);
 		return b;
 	}
+	
+	public static void setUserdefinedType(Type type) {
+		userDefinedType = type;
+	}
+
 }

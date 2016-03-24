@@ -2,6 +2,7 @@ package ontologizer.association;
 
 import java.util.regex.*;
 
+import ontologizer.association.AssociationParser.Type;
 import ontologizer.go.PrefixPool;
 import ontologizer.go.TermID;
 import ontologizer.types.ByteString;
@@ -128,6 +129,15 @@ public class Association
 	{
 		initFromLine(this, line, null);
 	}
+	
+	public Association(String line, Type type) throws Exception {
+		if (type.equals(Type.PAF))
+			initFromPAFLine(this, line, null);
+		else
+			initFromLine(this, line, null);
+
+	}
+
 
 	/**
 	 * Constructs a new association object.
@@ -302,6 +312,33 @@ public class Association
 
 		a.synonym = new ByteString(fields[SYNONYMFIELD].trim());
 	}
+	
+	private static void initFromPAFLine(Association a, String line, PrefixPool prefixPool) {
+		a.DB_Object = a.DB_Object_Symbol = a.synonym = emptyString;
+		a.termID = null;
+
+		/* Split the tab-separated line: */
+		String[] fields = pattern.split(line, 14);
+
+		a.DB_Object = new ByteString(fields[0] + ":" + fields[1]);
+
+		/*
+		 * DB_Object_Symbol should always be at 2 (or is missing, then this entry wont make sense for this program anyway)
+		 */
+		a.DB_Object_Symbol = new ByteString(fields[2].trim());
+
+		a.evidence = new ByteString(fields[EVIDENCEFIELD].trim());
+		a.aspect = new ByteString(fields[ASPECTFIELD].trim());
+
+		String[] qualifiers = fields[QUALIFIERFIELD].trim().split("\\|");
+		for (String qual : qualifiers)
+			if (qual.equalsIgnoreCase("not"))
+				a.notQualifier = true;
+
+		fields[GOFIELD] = fields[GOFIELD].trim();
+		a.termID = new TermID(fields[GOFIELD], prefixPool);
+	}
+
 
 	/**
 	 * Create an association from a GAF line. Uses the supplied prefix pool.
