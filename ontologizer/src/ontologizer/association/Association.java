@@ -338,6 +338,7 @@ public class Association
 		fields[GOFIELD] = fields[GOFIELD].trim();
 		a.termID = new TermID(fields[GOFIELD], prefixPool);
 		a.synonym = new ByteString(fields[11].trim());
+		a.DB_Object_Symbol = new ByteString(a.DB_Object_Symbol+" ("+a.DB_Object+")");
 	}
 
 
