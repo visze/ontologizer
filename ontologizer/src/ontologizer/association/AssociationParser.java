@@ -176,7 +176,7 @@ public class AssociationParser
 			} 
 			else if (userDefinedType.equals(Type.PAF)) {
 				importAssociationFileFromPaf(input, head, names, terms, evidences, progress);
-				fileType = Type.GAF;
+				fileType = Type.GAF; // still store GAF not PAF - not sure about side effects
 			}
 			else
 			{
@@ -262,7 +262,7 @@ public class AssociationParser
         
         	associations = ls.getAssociations();
         	synonym2gene = ls.getSynonym2Gene();
-        	dbObjectID2gene = ls.getDbObjectID2Gene();
+        	dbObjectID2gene = ls.getItemId2disease();
         
         	if (symbolWarnings >= 1000)
         		logger.warning("The symbols of a total of " + symbolWarnings + " entries mapped ambiguously");
@@ -631,5 +631,6 @@ public class AssociationParser
 	public static void setUserdefinedType(Type type) {
 		userDefinedType = type;
 	}
+	
 
 }
