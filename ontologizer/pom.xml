@@ -60,7 +60,7 @@
 			<build>
 				<plugins>
 					<plugin>
-						<!--  Copy the static html file into our output directory -->
+						<!-- Copy the static html file into our output directory -->
 						<artifactId>maven-resources-plugin</artifactId>
 						<version>2.6</version>
 						<executions>
@@ -203,10 +203,72 @@
 						<configuration>
 							<url>file://${project.build.directory}/staging-mvn-repo</url>
 							<file>${project.build.directory}/${project.build.finalName}.jar</file>
-							<!-- Different then our groupId -->
+							<javadoc>${project.build.directory}/${project.build.finalName}-javadoc.jar</javadoc>
+							<sources>${project.build.directory}/${project.build.finalName}-sources.jar</sources>
+							<!-- Different to our groupId -->
 							<groupId>de.ontologizer</groupId>
 							<artifactId>${project.artifactId}</artifactId>
 							<version>${project.version}</version>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Clean the unnecessary ontologizer folder. No idea why it is populated by deploy-file in the first place -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>clean-false-ontologizer</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<configuration>
+							<excludeDefaultDirectories>true</excludeDefaultDirectories>
+							<filesets>
+								<fileset>
+									<directory>
+										${project.build.directory}/staging-mvn-repo/ontologizer
+									</directory>
+								</fileset>
+							</filesets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Build sources jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>generate-sources-jar</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<executions>
+					<execution>
+						<id>generate-javadoc-jar</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<excludePackageNames>att.*,java_cup.*</excludePackageNames>
 						</configuration>
 					</execution>
 				</executions>
