@@ -79,6 +79,8 @@ public class Term implements ITerm
 	/** The information content associated to the term. TODO: Extract this */
 	private double informationContent = -1;
 
+	private String replacedBy;
+
 	/**
 	 * Default constructor. For builder only.
 	 */
@@ -319,7 +321,15 @@ public class Term implements ITerm
 	public void setDefinition(String definition) {
 		this.definition = definition;
 	}
+	
+	public void setReplacedBy(String currentReplacedBy) {
+	    this.replacedBy = currentReplacedBy;
+	}
 
+	public String getReplacedBy() {
+	    return replacedBy;
+	}
+	
 	public void setEquivalents(ArrayList<TermID> currentEquivalents) {
 		equivalents = new TermID[currentEquivalents.size()];
 		int i = 0;
@@ -522,4 +532,6 @@ public class Term implements ITerm
 		builder.term.name = name;
 		return builder;
 	}
+
+	
 }

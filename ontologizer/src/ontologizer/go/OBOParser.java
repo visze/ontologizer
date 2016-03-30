@@ -58,6 +58,9 @@ public class OBOParser
 
 	/** Ignore synonyms */
 	public final static int IGNORE_SYNONYMS     = 1 << 4;
+	
+	/** Parse the replaced_by field */
+	public final static int PARSE_REPLACEDBY     = 1 << 5;
 
 	/**
 	 * Escaped characters such as \\ in the gene_ontology.obo file.
@@ -138,6 +141,9 @@ public class OBOParser
 
 	/** The definition of the stanza currently being parsed */
 	private String currentDefintion;
+	
+	/** The replaced_by field of the stanza currently being parsed */
+	private String currentReplacedBy;
 
 	/** Is current term obsolete? */
 	private boolean currentObsolete;
@@ -248,6 +254,7 @@ public class OBOParser
 			t.setSynonyms(currentSynonyms);
 			t.setIntersections(currentIntersections);
 			t.setXrefs(currentXrefs);
+			t.setReplacedBy(currentReplacedBy);
 			terms.add(t);
 
 			/* Statistics */
@@ -272,6 +279,7 @@ public class OBOParser
 		currentSynonyms.clear();
 		currentIntersections.clear();
 		currentXrefs.clear();
+		currentReplacedBy = null;
 	}
 
 
@@ -341,6 +349,7 @@ public class OBOParser
 			private final byte [] XREF_KEYWORD = "xref".getBytes();
 			private final byte [] SUBSET_KEYWORD = "subset".getBytes();
 			private final byte [] TRUE_KEYWORD = "true".getBytes();
+			private final byte [] REPLACEDBY_KEYWORD = "replaced_by".getBytes();
 
 			private final byte[][] termKeywords =
 			{
@@ -354,7 +363,8 @@ public class OBOParser
 				EQUIVALENT_TO_KEYWORD,
 				IS_OBSOLETE_KEYWORD,
 				XREF_KEYWORD,
-				SUBSET_KEYWORD
+				SUBSET_KEYWORD,
+				REPLACEDBY_KEYWORD
 			};
 
 			class StringEdge extends Edge<Integer>
@@ -951,6 +961,14 @@ public class OBOParser
 					currentDefintion = new String(temp, 0, len);
 				}
 			}
+			
+			private void parse_replacedby(byte[] buf, int valueStart, int valueLen)
+			{
+				if ((options & PARSE_REPLACEDBY) != 0)
+				{
+					currentReplacedBy = new String(buf,valueStart, valueLen);
+				}
+			}
 
 			private void parse_namespace(byte[] buf, int valueStart, int valueLen)
 			{
@@ -1063,6 +1081,9 @@ public class OBOParser
 				} else if ((options & PARSE_DEFINITIONS) != 0 && equalsIgnoreCase(buf, keyStart, keyLen, DEF_KEYWORD))
 				{
 					parse_def(buf, valueStart, valueLen);
+				} else if ((options & PARSE_REPLACEDBY) != 0 && equalsIgnoreCase(buf, keyStart, keyLen, REPLACEDBY_KEYWORD))
+				{
+					parse_replacedby(buf, valueStart, valueLen);
 				} else if (equalsIgnoreCase(buf, keyStart, keyLen, NAMESPACE_KEYWORD))
 				{
 					parse_namespace(buf, valueStart, valueLen);
