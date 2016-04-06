@@ -359,6 +359,9 @@ public class Term implements ITerm
 	 */
 	public TermID[] getAlternatives()
 	{
+		// alternatives may not have been initialized at all (e.g. for artificial root)
+		if (alternatives==null)
+			return null;
 		TermID [] alts = new TermID[alternatives.size()];
 		return alternatives.toArray(alts);
 	}
