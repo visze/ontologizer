@@ -6,6 +6,13 @@
   <version>0.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ssh-repository</id>
+      <url>scpexe://compbio:/var/www/tl_files/maven/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <!-- Our local repository. We won't like to depend on external ones so - 
        the software can be still compiled with Eclipse without a Maven - plugin -->
   <repositories>
@@ -17,6 +24,7 @@
 
   <build>
    <plugins>
+
     <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
@@ -27,6 +35,16 @@
      </configuration>
     </plugin>
    </plugins>
+
+<extensions>
+      <!-- Enabling the use of SSH -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+         <version>2.10</version>
+      </extension>
+    </extensions>
+
   </build>
 
   <modules>

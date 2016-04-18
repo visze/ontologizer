@@ -274,8 +274,7 @@
 				</executions>
 			</plugin>
 
-			<!-- see https://stackoverflow.com/questions/14013644 -->
-
+			<!-- see https://stackoverflow.com/questions/14013644 
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
@@ -302,19 +301,20 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 
 
 		<pluginManagement>
 			<plugins>
-				<!-- Disable standard deploy phase -->
+				<!-- Disable standard deploy phase 
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<configuration>
 						<skip>true</skip>
 					</configuration>
 				</plugin>
-
+				-->
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
