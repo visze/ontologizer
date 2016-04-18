@@ -1,5 +1,6 @@
 package ontologizer.go;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,8 +33,11 @@ import ontologizer.types.ByteString;
  * @author Peter Robinson, Sebastian Bauer, Sebastian Koehler
  */
 
-public class Term implements ITerm
+public class Term implements Serializable, ITerm
 {
+        /** Generated via eclipse */
+        private static final long serialVersionUID = -2288298614402422835L;
+
 	/** The id ("accession number") of this GO term */
 	private TermID id;
 
