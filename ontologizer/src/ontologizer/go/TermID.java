@@ -1,5 +1,6 @@
 package ontologizer.go;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import ontologizer.types.ByteString;
@@ -11,10 +12,16 @@ import ontologizer.types.ByteString;
  * The class is immutable.
  *
  * @author Sebastian Bauer
+ * @author Sebastian Köhler
  *
  */
-public class TermID
+public class TermID implements Serializable
 {
+    
+	/** generated via eclispe */
+
+    	private static final long serialVersionUID = -4092160766900668163L;
+
 	/** The default prefix. Only used with no prefix is specified */
 	public static final Prefix DEFAULT_PREFIX = new Prefix("GO");
 

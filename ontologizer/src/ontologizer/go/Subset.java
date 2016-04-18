@@ -1,13 +1,16 @@
 package ontologizer.go;
 
+import java.io.Serializable;
+
 /**
  * This class represents a single subset. Terms can be accompanied by
  * subsets to restrict the ontology for certain purposes.
  *
  * @author Sebastian Bauer
  */
-public class Subset
+public class Subset implements Serializable
 {
+    	private static final long serialVersionUID = -2196187706025052983L;
 	private String name;
 	private String desc;
 

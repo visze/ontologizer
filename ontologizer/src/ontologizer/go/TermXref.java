@@ -1,8 +1,12 @@
 package ontologizer.go;
 
-public class TermXref {
+import java.io.Serializable;
+
+public class TermXref  implements Serializable{
 
 
+    	private static final long serialVersionUID = -33452542537423774L;
+    	
 	/**
 	 * The external database name, e.g. MeSH, ICD-10, UMLS
 	 */

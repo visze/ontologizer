@@ -1,5 +1,7 @@
 package ontologizer.go;
 
+import java.io.Serializable;
+
 import ontologizer.types.ByteString;
 
 /**
@@ -10,8 +12,13 @@ import ontologizer.types.ByteString;
  * @author Sebastian Bauer
  *
  */
-public class Prefix
+public class Prefix implements Serializable
 {
+	/**
+         * Generated via eclipse
+         */
+        private static final long serialVersionUID = -7414533344167041453L;
+        
 	/** The prefix as byte string */
 	private ByteString prefix;
 
