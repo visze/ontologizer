@@ -107,7 +107,7 @@ public class OBOParser
 	private String format_version;
 
 	/** Date of the gene_ontology.obo file */
-	private String date;
+	private String dataVersion;
 
 	/** Collection of all terms */
 	private HashSet<Term> terms = new HashSet<Term>();
@@ -332,7 +332,7 @@ public class OBOParser
 
 			/* Supported header types */
 			private final byte [] FORMAT_VERSION_KEYWORD = "format-version".getBytes();
-			private final byte [] DATE_KEYWORD = "date".getBytes();
+			private final byte [] DATAVERSION_KEYWORD = "data-version".getBytes();
 			private final byte [] SUBSETDEF_KEYWORD = "subsetdef".getBytes();
 
 			/* Supported term types */
@@ -777,9 +777,10 @@ public class OBOParser
 				if (equalsIgnoreCase(buf, keyStart, keyLen, FORMAT_VERSION_KEYWORD))
 				{
 					format_version = new String(buf, valueStart, valueLen);
-				} else if (equalsIgnoreCase(buf, keyStart, keyLen, DATE_KEYWORD))
+				} else if (equalsIgnoreCase(buf, keyStart, keyLen, DATAVERSION_KEYWORD))
 				{
-					date = new String(buf, valueStart, valueLen);
+					dataVersion = new String(buf, valueStart, valueLen);
+					System.out.println("set dataVersion to: "+dataVersion);
 				} else if (equalsIgnoreCase(buf, keyStart, keyLen, SUBSETDEF_KEYWORD))
 				{
 					Subset s = Subset.createFromString(new String(buf, valueStart, valueLen));
@@ -1126,9 +1127,9 @@ public class OBOParser
 		return format_version;
 	}
 
-	public String getDate()
+	public String getDataVersion()
 	{
-		return date;
+		return dataVersion;
 	}
 
 	/**
@@ -1141,7 +1142,7 @@ public class OBOParser
 		StringBuilder diag = new StringBuilder();
 
 		diag.append("Details of parsed obo file:\n");
-		diag.append("  date:\t\t\t" + this.date + "\n");
+		diag.append("  data-version:\t\t\t" + this.dataVersion + "\n");
 		diag.append("  format:\t\t" + this.format_version + "\n");
 		diag.append("  term definitions:\t" + this.terms.size());
 

@@ -161,7 +161,7 @@ public class OntologizerCore
 
 		OBOParser oboParser = new OBOParser(new OBOParserFileInput(args.goTermsOBOFile));
 		System.err.println(oboParser.doParse());
-		goTerms = new TermContainer(oboParser.getTermMap(), oboParser.getFormatVersion(), oboParser.getDate());
+		goTerms = new TermContainer(oboParser.getTermMap(), oboParser.getFormatVersion(), oboParser.getDataVersion());
 		System.err.println("Building graph");
 		goGraph = Ontology.create(goTerms);
 
