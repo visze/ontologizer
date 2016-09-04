@@ -1142,7 +1142,7 @@ public class OBOParser
 		StringBuilder diag = new StringBuilder();
 
 		diag.append("Details of parsed obo file:\n");
-		diag.append("  data-version:\t\t\t" + this.dataVersion + "\n");
+		diag.append("  data-version:\t\t" + this.dataVersion + "\n");
 		diag.append("  format:\t\t" + this.format_version + "\n");
 		diag.append("  term definitions:\t" + this.terms.size());
 
