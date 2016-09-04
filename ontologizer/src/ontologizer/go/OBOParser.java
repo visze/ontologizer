@@ -780,7 +780,6 @@ public class OBOParser
 				} else if (equalsIgnoreCase(buf, keyStart, keyLen, DATAVERSION_KEYWORD))
 				{
 					dataVersion = new String(buf, valueStart, valueLen);
-					System.out.println("set dataVersion to: "+dataVersion);
 				} else if (equalsIgnoreCase(buf, keyStart, keyLen, SUBSETDEF_KEYWORD))
 				{
 					Subset s = Subset.createFromString(new String(buf, valueStart, valueLen));
