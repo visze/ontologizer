@@ -60,7 +60,7 @@ public class Term implements Serializable, ITerm
 	private TermID[] equivalents;
 
 	/** The synonyms of this term, as read from the obo file. */
-	private String[] synonyms;
+	private String[] synonyms = new String[0];
 
 	/** The intersections tags of this term, as read from the obo file. */
 	private String[] intersections;
