@@ -73,6 +73,7 @@ public interface ITerm
 	 * @return the synonyms.
 	 */
 	public String[] getSynonyms();
+	public Synonym[] getSynonymsAsObj();
 
 	/**
 	 * Returns the associated xrefs

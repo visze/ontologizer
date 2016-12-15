@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ontologizer.linescanner.AbstractByteLineScanner;
 import ontologizer.types.ByteString;
@@ -32,7 +34,9 @@ import sonumina.math.graph.Edge;
  * OBOParser parses the Gene Ontology OBO term definition file. Please see
  * www.geneontology.org for background on this file format.
  *
- * @author Peter N. Robinson, Sebastian Bauer, Sebastian Koehler
+ * @author Peter N. Robinson 
+ * @author Sebastian Bauer
+ * @author Sebastian Koehler
  */
 public class OBOParser
 {
@@ -158,7 +162,7 @@ public class OBOParser
 	private ArrayList<TermID> currentEquivalents = new ArrayList<TermID>();
 
 	/** Synonyms, if any, for the Term currently being parsed */
-	private ArrayList<String> currentSynonyms = new ArrayList<String>();
+	private ArrayList<Synonym> currentSynonyms = new ArrayList<Synonym>();
 
 	/** Intersections, if any, for the Term currently being parsed */
 	private ArrayList<String> currentIntersections = new ArrayList<String>();
@@ -578,6 +582,9 @@ public class OBOParser
 			private final byte [] REGULATES_KEYWORD = "regulates".getBytes();
 			private final byte [] NEGATIVELY_REGULATES_KEYWORD = "negatively_regulates".getBytes();
 			private final byte [] POSITIVELY_REGULATES_KEYWORD = "positively_regulates".getBytes();
+			private final byte [] OPPOSITE_OF_KEYWORD = "is_opposite_of".getBytes();
+
+			private Pattern synonymPattern = Pattern.compile("^\"(.+)\"(.+?)$");
 
 
 
@@ -919,6 +926,8 @@ public class OBOParser
 				else if (equalsIgnoreCase(buf,typeStart, typeEnd - typeStart,REGULATES_KEYWORD)) type = TermRelation.REGULATES;
 				else if (equalsIgnoreCase(buf,typeStart, typeEnd - typeStart,NEGATIVELY_REGULATES_KEYWORD)) type = TermRelation.POSITIVELY_REGULATES;
 				else if (equalsIgnoreCase(buf,typeStart, typeEnd - typeStart,POSITIVELY_REGULATES_KEYWORD)) type = TermRelation.NEGATIVELY_REGULATES;
+				else if (equalsIgnoreCase(buf,typeStart, typeEnd - typeStart,OPPOSITE_OF_KEYWORD)) type = TermRelation.OPPOSITE_OF;
+
 				else type = TermRelation.UNKOWN;
 
 				currentParents.add(new ParentTermID(readTermID(buf,idStart,idEnd - idStart + 1),type));
@@ -928,13 +937,15 @@ public class OBOParser
 			{
 				if ((options & IGNORE_SYNONYMS) == 0)
 				{
-					int synonymStart = findUnescaped(buf, valueStart, valueLen, '\"');
-					if (synonymStart == -1) return;
-					synonymStart++;
-					int synonymEnd = findUnescaped(buf, synonymStart, valueStart + valueLen - synonymStart, '\"');
-					if (synonymEnd == -1) return;
-
-					currentSynonyms.add(new String(buf,synonymStart,synonymEnd-synonymStart));
+					String synonymLine = new String(buf,valueStart,valueLen);
+					Matcher m = synonymPattern .matcher(synonymLine);
+					if (!m.find()){
+						System.err.println("can't find pattern in "+synonymLine);
+					}
+					String synonym = m.group(1);
+					String extraInfo = m.group(2);
+					Synonym synonymObject = new Synonym(synonym,extraInfo);
+					currentSynonyms.add(synonymObject);
 				}
 			}
 

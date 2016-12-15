@@ -30,7 +30,9 @@ import ontologizer.types.ByteString;
  * tabulating the counts of functions found in a cluster
  * </P>
  *
- * @author Peter Robinson, Sebastian Bauer, Sebastian Koehler
+ * @author Peter Robinson
+ * @author Sebastian Bauer
+ * @author Sebastian Koehler
  */
 
 public class Term implements Serializable, ITerm
@@ -52,6 +54,9 @@ public class Term implements Serializable, ITerm
 
 	/** The parents of the this term */
 	private ParentTermID[] parents;
+	
+	/** The related terms of the this term, e.g. regulates or opposite of */
+	private ParentTermID[] relatedClasses;
 
 	/** The term's alternatives */
 	private ArrayList<TermID> alternatives;
@@ -60,7 +65,7 @@ public class Term implements Serializable, ITerm
 	private TermID[] equivalents;
 
 	/** The synonyms of this term, as read from the obo file. */
-	private String[] synonyms = new String[0];
+	private Synonym[] synonyms = new Synonym[0];
 
 	/** The intersections tags of this term, as read from the obo file. */
 	private String[] intersections;
@@ -216,7 +221,24 @@ public class Term implements Serializable, ITerm
 	private void init(TermID id, String name, Namespace namespace, ParentTermID[] parents) {
 		this.id = id;
 		this.name = name;
-		this.parents = parents;
+		
+		ArrayList<ParentTermID> realParents = new ArrayList<ParentTermID>();
+		ArrayList<ParentTermID> relatedTerms = new ArrayList<ParentTermID>();
+		for (ParentTermID p : parents){
+			if (p.relation.equals(TermRelation.IS_A) || p.relation.equals(TermRelation.PART_OF_A))
+				realParents.add(p);
+			else
+				relatedTerms.add(p);
+		}
+		
+		ParentTermID [] parentArray = new ParentTermID[realParents.size()];
+		realParents.toArray(parentArray);
+		ParentTermID [] relatedArray = new ParentTermID[relatedTerms.size()];
+		relatedTerms.toArray(relatedArray);
+		
+		
+		this.parents = parentArray;
+		this.relatedClasses = relatedArray;
 
 		if (namespace == null)
 			namespace = Namespace.UNKOWN_NAMESPACE;
@@ -263,12 +285,16 @@ public class Term implements Serializable, ITerm
 	}
 
 	/**
-	 * Returns the parent terms including the relation.
+	 * Returns the parent terms - only superclasses (incl. part_of)
 	 *
 	 * @return
 	 */
 	public ParentTermID[] getParents() {
 		return parents;
+	}
+	
+	public ParentTermID[] getRelatedClasses() {
+		return relatedClasses;
 	}
 
 	@Override
@@ -389,16 +415,24 @@ public class Term implements Serializable, ITerm
 		return subsets;
 	}
 
-	public void setSynonyms(ArrayList<String> currentSynonyms) {
+	public void setSynonyms(ArrayList<Synonym> currentSynonyms) {
 
 		if (currentSynonyms.size() > 0) {
-			synonyms = new String[currentSynonyms.size()];
+			synonyms = new Synonym[currentSynonyms.size()];
 			currentSynonyms.toArray(synonyms);
 		}
 	}
 
-	public String[] getSynonyms() {
+	public Synonym[] getSynonymsAsObj() {
 		return synonyms;
+	}
+	
+	public String[] getSynonyms() {
+		String[] s = new String[synonyms.length];
+		for (int i = 0; i < synonyms.length; i++) {
+			s[i]=synonyms[i].getSynonymLabel();
+		}
+		return s;
 	}
 
 	public void setXrefs(ArrayList<TermXref> currentXrefs) {
