@@ -140,6 +140,8 @@ public class OBOParser
 	/** The name of the GO Term currently being parsed */
 	private String currentName;
 
+	private boolean currentIsLayLabel = false;
+	
 	/** The namespace of the stanza currently being parsed */
 	private Namespace currentNamespace;
 
@@ -259,6 +261,7 @@ public class OBOParser
 			t.setIntersections(currentIntersections);
 			t.setXrefs(currentXrefs);
 			t.setReplacedBy(currentReplacedBy);
+			t.setLabelIsLay(currentIsLayLabel);
 			terms.add(t);
 
 			/* Statistics */
@@ -275,7 +278,11 @@ public class OBOParser
 		currentName = null;
 		currentNamespace = null;
 		currentDefintion = null;
+		currentReplacedBy = null;
+		
 		currentObsolete = false;
+		currentIsLayLabel = false;
+		
 		currentParents.clear();
 		currentAlternatives.clear();
 		currentEquivalents.clear();
@@ -283,7 +290,7 @@ public class OBOParser
 		currentSynonyms.clear();
 		currentIntersections.clear();
 		currentXrefs.clear();
-		currentReplacedBy = null;
+		
 	}
 
 
@@ -901,7 +908,14 @@ public class OBOParser
 
 			private void parse_name(byte[] buf, int valueStart, int valueLen)
 			{
-				currentName = new String(buf, valueStart, valueLen);
+				String line = new String(buf, valueStart, valueLen);
+				if (line.contains("{has_synonym_type=\"layperson\"}")){
+					currentIsLayLabel = true;
+					currentName = line.replaceAll(" \\{.+", "");
+				}
+				else{
+					currentName = new String(buf, valueStart, valueLen);
+				}
 			}
 
 			private void parse_is_a(byte[] buf, int valueStart, int valueLen)

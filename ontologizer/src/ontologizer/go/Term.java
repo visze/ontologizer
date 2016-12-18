@@ -90,6 +90,8 @@ public class Term implements Serializable, ITerm
 
 	private String replacedBy;
 
+	private boolean isLayLabel;
+
 	/**
 	 * Default constructor. For builder only.
 	 */
@@ -574,5 +576,15 @@ public class Term implements Serializable, ITerm
 		return builder;
 	}
 
-	
+	public void setLabelIsLay(boolean currentIsLayLabel) {
+		this.isLayLabel = currentIsLayLabel;
+	}
+
+	/**
+	 * 
+	 * @return if the terms primary label is a lay word (esp. for HPO)
+	 */
+	public boolean isLayLabel() {
+		return isLayLabel;
+	}
 }
