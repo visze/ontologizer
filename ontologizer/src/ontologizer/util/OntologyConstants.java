@@ -26,6 +26,4 @@ public class OntologyConstants {
 	public static final String organAbnormalityRootId = "HP:0000118";
 	public static final String mortalityRootId = "HP:0040006";
 
-	
-
 }
