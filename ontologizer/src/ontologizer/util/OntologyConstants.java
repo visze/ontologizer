@@ -1,5 +1,6 @@
 package ontologizer.util;
 
+
 public class OntologyConstants {
 
 	public static enum Subontology {
@@ -25,5 +26,38 @@ public class OntologyConstants {
 	public static final String modifierRootId = "HP:0012823";
 	public static final String organAbnormalityRootId = "HP:0000118";
 	public static final String mortalityRootId = "HP:0040006";
+	
+	
+	/**
+	 * @param frequencyOboId
+	 * @return if null or empty string are provided, will return 1
+	 */
+	public static double frequencyOboId2double(String frequencyOboId){
+		
+		if (frequencyOboId==null || frequencyOboId.equals("")){
+			return 1;
+		}
+		if (frequencyOboId.equals(frequency_Excluded)){
+			return 0;
+		}
+		if (frequencyOboId.equals(frequency_Very_rare)){
+			return 0.025;
+		}
+		if (frequencyOboId.equals(frequency_Occasional)){
+			return 0.12;
+		}
+		if (frequencyOboId.equals(frequency_Frequent)){
+			return 0.5;
+		}
+		if (frequencyOboId.equals(frequency_Very_frequent)){
+			return 0.9;
+		}
+		if (frequencyOboId.equals(frequency_Obligate)){
+			return 1;
+		}
+		
+		return -1;
+	}
+	
 
 }
