@@ -591,7 +591,7 @@ public class OBOParser
 			private final byte [] POSITIVELY_REGULATES_KEYWORD = "positively_regulates".getBytes();
 			private final byte [] OPPOSITE_OF_KEYWORD = "is_opposite_of".getBytes();
 
-			private Pattern synonymPattern = Pattern.compile("^\"(.+)\"(.+?)$");
+			private Pattern synonymPattern = Pattern.compile("^\"(.+?)\"(.+?)$");
 
 
 
@@ -952,7 +952,7 @@ public class OBOParser
 				if ((options & IGNORE_SYNONYMS) == 0)
 				{
 					String synonymLine = new String(buf,valueStart,valueLen);
-					Matcher m = synonymPattern .matcher(synonymLine);
+					Matcher m = synonymPattern.matcher(synonymLine);
 					if (!m.find()){
 						System.err.println("can't find pattern in "+synonymLine);
 					}
