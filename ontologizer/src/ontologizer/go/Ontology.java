@@ -269,7 +269,7 @@ public class Ontology implements Iterable<Term>
 	}
 
 	/**
-	 * Return the set of term IDs containing the given term's descendants.
+	 * Return the set of term IDs containing the given term's childrens.
 	 *
 	 * @param termID as string
 	 * @return the set of term ids of children as a set of strings
@@ -315,7 +315,7 @@ public class Ontology implements Iterable<Term>
 	 * Return the set of term IDs containing the given term's children.
 	 *
 	 * @param term - the term's id as a TermID
-	 * @return the set of termID of the descendants as term-IDs
+	 * @return the set of termID of the children (only direct) as term-IDs
 	 */
 	public Set<TermID> getTermChildren(TermID termID)
 	{
@@ -336,7 +336,7 @@ public class Ontology implements Iterable<Term>
 	 * Return the set of terms containing the given term's children.
 	 *
 	 * @param term - the term for which the children should be returned
-	 * @return the set of terms of the descendants as terms
+	 * @return the set of terms of the children as terms
 	 */
 	public Set<Term> getTermChildren(Term term)
 	{
