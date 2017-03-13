@@ -4,7 +4,7 @@ package ontologizer.util;
 public class OntologyConstants {
 
 	public static enum Subontology {
-		ORGANABNORMALITY, INHERITANCE, MODIFIER, MORTALITY_AGING
+		ORGANABNORMALITY, INHERITANCE, MODIFIER, MORTALITY_AGING, FREQUENCY
 	}
 	
 	public static enum EvidenceCode {
@@ -26,6 +26,7 @@ public class OntologyConstants {
 	public static final String modifierRootId = "HP:0012823";
 	public static final String organAbnormalityRootId = "HP:0000118";
 	public static final String mortalityRootId = "HP:0040006";
+	public static final String frequencyRootId = "HP:0040279";
 	
 	
 	/**
