@@ -92,6 +92,8 @@ public class Term implements Serializable, ITerm
 
 	private boolean isLayLabel;
 
+	private String termIdAsString;
+
 	/**
 	 * Default constructor. For builder only.
 	 */
@@ -210,6 +212,7 @@ public class Term implements Serializable, ITerm
 		ParentTermID [] parentArray = new ParentTermID[parents.size()];
 		parents.toArray(parentArray);
 		init(id, name, namespace, parentArray);
+		this.termIdAsString = id.toString();
 	}
 
 	/**
@@ -255,7 +258,7 @@ public class Term implements Serializable, ITerm
 	 */
 	public String getIDAsString()
 	{
-		return id.toString();
+		return termIdAsString;
 	}
 
 	/**
@@ -517,6 +520,7 @@ public class Term implements Serializable, ITerm
 		public Optional id(String termID)
 		{
 			term.id = new TermID(termID, prefixPool);
+			term.termIdAsString = term.id.toString();
 			return this;
 		}
 
@@ -524,6 +528,7 @@ public class Term implements Serializable, ITerm
 		public Optional id(TermID termID)
 		{
 			term.id = termID;
+			term.termIdAsString = term.id.toString();
 			return this;
 		}
 
@@ -531,6 +536,7 @@ public class Term implements Serializable, ITerm
 		public Optional id(ByteString termID)
 		{
 			term.id = new TermID(termID, prefixPool);
+			term.termIdAsString = term.id.toString();
 			return this;
 		}
 
